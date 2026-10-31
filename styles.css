@@ -30,13 +30,6 @@ body {
 
     color: var(--text);
     background-color: var(--bg);
-    /*background: 
-        radial-gradient(
-            ellipse at top,
-            #1b2a45 0%,
-            var(--bg) 60%
-        );*/
-
     overflow-x: hidden;
 }
 
@@ -99,10 +92,6 @@ body {
     font-weight: 700;
     letter-spacing: -0.02em;
 }
-
-/* =========================
-   Object cards
-   ========================= */
 
 .card-grid {
     display: grid;
