@@ -1,35 +1,70 @@
+
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Spinning Cube</title>
-    <style>
-        html,
-        body {
-            margin: 0;
-            height: 100%;
-            overflow: hidden;
-        }
+    <meta name="theme-color" content="#111827">
 
-        body {
-            display: grid;
-            place-items: center;
-        }
-        
-        #glCanvas {
-            display: block;
-            width: 960px;
-            height: 600px;
-            border-radius: 8px;
-        }
-    </style>
+    <title>Disuruh Keluar dari TC</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <canvas id="glCanvas"></canvas>
+    <main class="page-container">
+
+        <header class="page-header">
+            <h1>Disuruh Keluar dari TC</h1>
+        </header>
+
+        <section class="canvas-section" aria-label="Interactive scene">
+            <canvas id="glCanvas"></canvas>
+        </section>
+
+        <section class="objects-section" aria-label="Scene objects">
+            <h2>Objects</h2>
+
+            <div class="card-grid">
+                <article class="object-card">
+                    <img src="assets/references/chair.gif" alt="Chair">
+                    <p>Chair</p>
+                </article>
+
+                <article class="object-card">
+                    <img src="assets/references/screen.gif" alt="Projector screen">
+                    <p>Projector Screen</p>
+                </article>
+
+                <article class="object-card">
+                    <img src="assets/references/slider.gif" alt="Window sliders">
+                    <p>Window Sliders</p>
+                </article>
+
+                <article class="object-card">
+                    <img src="assets/references/door.gif" alt="Door">
+                    <p>Door</p>
+                </article>
+            </div>
+        </section>
+
+        <footer class="members-section">
+            <h2>We actually left, please give a good grade</h2>
+
+            <div class="members-container">
+                <div class="member">
+                    <span class="member-number">5025241139</span>
+                    <p>Mohammed Lazuardi Yasfin</p>
+                </div>
+
+                <div class="member">
+                    <span class="member-number">5025241152</span>
+                    <p>Bintang Ilham Pabeta</p>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
     <script type="module" src="./src/main.js"></script>
 </body>
-
 </html>
