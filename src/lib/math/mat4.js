@@ -1,3 +1,5 @@
+import { quatToEuler } from './vec3.js';
+
 export class Mat4 extends Array {
     static get [Symbol.species]() { return Array; }
 
@@ -122,6 +124,61 @@ export class Mat4 extends Array {
         this[8]  = r02*sz_; this[9]  = r12*sz_; this[10] = r22*sz_; this[11] = 0;
         this[12] = position[0]; this[13] = position[1]; this[14] = position[2]; this[15] = 1;
         return this;
+    }
+
+    decompose(position, rotation, scale) {
+        let sx = Math.hypot(this[0], this[1], this[2]);
+        const sy = Math.hypot(this[4], this[5], this[6]);
+        const sz = Math.hypot(this[8], this[9], this[10]);
+    
+        const det = this[0] * (this[5] * this[10] - this[6] * this[9]) -
+                    this[1] * (this[4] * this[10] - this[6] * this[8]) +
+                    this[2] * (this[4] * this[9] - this[5] * this[8]);
+        if (det < 0) sx = -sx;
+    
+        position[0] = this[12];
+        position[1] = this[13];
+        position[2] = this[14];
+    
+        const invSX = 1 / sx;
+        const invSY = 1 / sy;
+        const invSZ = 1 / sz;
+    
+        const m00 = this[0] * invSX, m01 = this[1] * invSX, m02 = this[2] * invSX;
+        const m10 = this[4] * invSY, m11 = this[5] * invSY, m12 = this[6] * invSY;
+        const m20 = this[8] * invSZ, m21 = this[9] * invSZ, m22 = this[10] * invSZ;
+    
+        const trace = m00 + m11 + m22;
+        let qx, qy, qz, qw;
+        
+        if (trace > 0) {
+            const s = 0.5 / Math.sqrt(trace + 1.0);
+            qw = 0.25 / s;
+            qx = (m21 - m12) * s;
+            qy = (m02 - m20) * s;
+            qz = (m10 - m01) * s;
+        } else if (m00 > m11 && m00 > m22) {
+            const s = 2.0 * Math.sqrt(1.0 + m00 - m11 - m22);
+            qw = (m21 - m12) / s;
+            qx = 0.25 * s;
+            qy = (m01 + m10) / s;
+            qz = (m02 + m20) / s;
+        } else if (m11 > m22) {
+            const s = 2.0 * Math.sqrt(1.0 + m11 - m00 - m22);
+            qw = (m02 - m20) / s;
+            qx = (m01 + m10) / s;
+            qy = 0.25 * s;
+            qz = (m12 + m21) / s;
+        } else {
+            const s = 2.0 * Math.sqrt(1.0 + m22 - m00 - m11);
+            qw = (m10 - m01) / s;
+            qx = (m02 + m20) / s;
+            qy = (m12 + m21) / s;
+            qz = 0.25 * s;
+        }
+    
+        quatToEuler([qx, qy, qz, qw], rotation);
+        scale[0] = sx; scale[1] = sy; scale[2] = sz;
     }
 
     getTranslation(v) {

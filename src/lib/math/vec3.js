@@ -19,3 +19,22 @@ export class Vec3 extends Array {
     fromArray(a, o = 0) { this[0] = a[o]; this[1] = a[o + 1]; this[2] = a[o + 2]; return this; }
     squaredDistance(v) { const dx = this[0] - v[0], dy = this[1] - v[1], dz = this[2] - v[2]; return dx * dx + dy * dy + dz * dz; }
 }
+
+export function quatToEuler(q, out = [0, 0, 0]) {
+    const x = q[0], y = q[1], z = q[2], w = q[3];
+    const m02 = 2.0 * (x * z + w * y);
+    const m12 = 2.0 * (y * z - w * x);
+    const m22 = 1.0 - 2.0 * (x * x + y * y);
+    const m01 = 2.0 * (x * y - w * z);
+    const m00 = 1.0 - 2.0 * (y * y + z * z);
+
+    out[1] = Math.asin(Math.max(-1, Math.min(1, m02)));
+    if (Math.abs(m02) > 0.9999) {
+        out[0] = 0;
+        out[2] = Math.atan2(m12, m22);
+    } else {
+        out[0] = Math.atan2(-m12, m22);
+        out[2] = Math.atan2(-m01, m00);
+    }
+    return out;
+}
