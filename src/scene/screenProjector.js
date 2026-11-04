@@ -23,15 +23,9 @@ export async function createScreenProjector(gl, program, glbUrl) {
     if (light) reparentKeepWorld(light, casing);
     if (mainScreen) reparentKeepWorld(mainScreen, casing);
     if (sideScreen) reparentKeepWorld(sideScreen, casing);
-    if (bottomScreen) reparentKeepWorld(bottomScreen, casing);
-    if (pullBar) reparentKeepWorld(pullBar, casing);
+    if (bottomScreen && mainScreen) reparentKeepWorld(bottomScreen, mainScreen);
+    if (pullBar && mainScreen) reparentKeepWorld(pullBar, mainScreen);
   }
-
-  const H = originToTop(mainScreen);
-  if (sideScreen) originToTop(sideScreen);
-
-  const pullBarBaseY = pullBar ? pullBar.position[1] : 0;
-  const bottomScreenBaseY = bottomScreen ? bottomScreen.position[1] : 0;
 
   let t = 1;
   let dir = -1;
@@ -69,40 +63,9 @@ export async function createScreenProjector(gl, program, glbUrl) {
 
       mainScreen.scale[1] = t;
       if (sideScreen) sideScreen.scale[1] = t;
-      if (bottomScreen)
-        bottomScreen.position[1] = bottomScreenBaseY + H * (1 - t);
 
-      if (pullBar) {
-        pullBar.position[1] = pullBarBaseY + H * (1 - t);
-      }
+      if (pullBar) pullBar.scale[1] = 1 / t;
+      if (bottomScreen) bottomScreen.scale[1] = 1 / t;
     },
   };
-}
-
-function originToTop(node) {
-  if (!node) return 0;
-  let maxY = -Infinity,
-    minY = Infinity;
-  node.traverse((child) => {
-    const pos = child.geometry?.attributes?.position?.data;
-    if (!pos) return;
-    for (let i = 1; i < pos.length; i += 3) {
-      if (pos[i] > maxY) maxY = pos[i];
-      if (pos[i] < minY) minY = pos[i];
-    }
-  });
-  if (maxY === -Infinity) return 0;
-
-  const H = maxY - minY;
-
-  node.traverse((child) => {
-    const pos = child.geometry?.attributes?.position?.data;
-    if (!pos) return;
-    for (let i = 1; i < pos.length; i += 3) pos[i] -= maxY;
-    child.geometry.updateAttribute(child.geometry.attributes.position);
-  });
-
-  node.position[1] += maxY;
-  node.worldMatrixNeedsUpdate = true;
-  return H;
 }

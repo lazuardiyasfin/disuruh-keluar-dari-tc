@@ -16,7 +16,7 @@ export async function createScene(gl, program) {
   root.addChild(door.root);
 
   const screenProjector = await createScreenProjector( gl, program, "./assets/models/screenProjector.glb", );
-  screenProjector.root.position.set(-3, 1, -1.5);
+  screenProjector.root.position.set(-3, 0, -1.5);
   root.addChild(screenProjector.root);
 
   const rollerBlind = await createRollerBlind(gl, program, "./assets/models/rollerBlind.glb");
