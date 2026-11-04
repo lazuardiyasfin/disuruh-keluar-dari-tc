@@ -6,6 +6,7 @@ import { Camera } from "./lib/core/camera.js";
 import { Program } from "./lib/core/program.js";
 import { Box } from "./lib/extra/box.js";
 import { Vec3 } from "./lib/math/vec3.js";
+import { createScene } from "./scene/scene.js";
 
 const degToRad = (deg) => (deg * Math.PI) / 180;
 
@@ -125,10 +126,6 @@ const program = new Program(renderer.gl, {
   },
 });
 
-const scene = new Transform();
-const cube = new Mesh(renderer.gl, { geometry: new Box(renderer.gl), program });
-cube.rotation.set(degToRad(20), degToRad(30), 0);
-scene.addChild(cube);
 
 const camera = new Camera(renderer.gl, {
   fov: 60, aspect: innerWidth / innerHeight, near: 0.1, far: 100,
@@ -149,16 +146,23 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-let last = 0;
-function frame(t) {
-  const dt = Math.min((t - last) * 0.001, 0.05);
-  last = t;
+async function init() {
+    console.log("Loading chair...");
+    const world = await createScene(renderer.gl, program);
+    console.log("Chair loaded successfully!");
 
-  cube.rotation[0] += degToRad(20) * dt;
-  cube.rotation[1] += degToRad(35) * dt;
+    let last = 0;
+    function frame(t) {
+      const dt = Math.min((t - last) * 0.001, 0.05);
+      last = t;
 
-  renderer.render({ scene, camera });
+      world.update(dt);
 
-  requestAnimationFrame(frame);
+      renderer.render({ scene: world.root, camera });
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
+
+init();
