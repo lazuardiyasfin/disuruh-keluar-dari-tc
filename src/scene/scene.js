@@ -11,7 +11,7 @@ export async function createScene(gl, program) {
   root.addChild(chair.root);
 
   const door = await createDoor(gl, program, "./assets/models/door.glb");
-  door.root.position.set(2, 0, 0);
+  door.root.position.set(4, 0, 2);
   door.root.rotation[1] = Math.PI;
   root.addChild(door.root);
 

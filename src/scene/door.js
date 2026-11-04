@@ -12,20 +12,20 @@ export async function createDoor(gl, program, glbUrl) {
     if (n.name) byName[n.name.toLowerCase()] = n;
   });
 
-  const doorMain = byName["door-main"];
-  const doorSec = byName["door-sec"];
-  const doorFrame = byName["doorframe"];
-  const spindle = byName["spindle"];
+  const doorMain = byName["right-door"];
+  const doorSec = byName["left-door"];
+  const doorFrame = byName["door-frame"];
+  const spindle = byName["inner-door-handle"];
 
-  reparentKeepWorld(byName["glass-main"], doorMain);
+  reparentKeepWorld(byName["right-door-glass"], doorMain);
   reparentKeepWorld(byName["keyframe"], doorMain);
   reparentKeepWorld(byName["keyhole"], byName["keyframe"]);
-  reparentKeepWorld(byName["spindle-hole"], doorMain);
-  reparentKeepWorld(byName["spindle"], byName["spindle-hole"]);
+  reparentKeepWorld(byName["door-handle"], doorMain);
+  reparentKeepWorld(byName["inner-door-handle"], byName["door-handle"]);
   reparentKeepWorld(byName["knob"], spindle);
-  reparentKeepWorld(byName["glass-sec"], doorSec);
-  reparentKeepWorld(byName["framewindow-1"], doorFrame);
-  reparentKeepWorld(byName["framewindow-2"], doorFrame);
+  reparentKeepWorld(byName["left-door-glass"], doorSec);
+  reparentKeepWorld(byName["right-door-frame-window"], doorFrame);
+  reparentKeepWorld(byName["left-door-frame-window"], doorFrame);
 
   let angle = 0,
     dir = 1,
