@@ -1,44 +1,41 @@
 import { Transform } from "../lib/core/transform.js";
 import { GLTFLoader } from "../lib/extra/gltfLoader.js";
+import { reparentKeepWorld } from "./sceneUtils.js";
 
 export async function createDoor(gl, program, glbUrl) {
   const root = new Transform();
   const gltf = await GLTFLoader.load(gl, glbUrl, program);
   root.addChild(gltf.root);
 
-  let doorMain = null;
-  let doorSec = null;
-  let doorFrame = null;
-  let spindle = null;
-
-  gltf.nodes.forEach((node) => {
-    if (!node.name) return;
-    const name = node.name.toLowerCase();
-    if (name === "door-main") doorMain = node;
-    if (name === "door-sec") doorSec = node;
-    if (name === "doorframe") doorFrame = node;
-    if (name === "spindle") spindle = node;
+  const byName = {};
+  gltf.nodes.forEach((n) => {
+    if (n.name) byName[n.name.toLowerCase()] = n;
   });
 
-  if (!spindle) console.warn('Door: no node named "spindle" found');
+  const doorMain = byName["door-main"];
+  const doorSec = byName["door-sec"];
+  const doorFrame = byName["doorframe"];
+  const spindle = byName["spindle"];
 
-  console.log("Door nodes:", {
-    main: doorMain?.name,
-    sec: doorSec?.name,
-    frame: doorFrame?.name,
-    spindle: spindle?.name,
-  });
+  reparentKeepWorld(byName["glass-main"], doorMain);
+  reparentKeepWorld(byName["keyframe"], doorMain);
+  reparentKeepWorld(byName["keyhole"], byName["keyframe"]);
+  reparentKeepWorld(byName["spindle-hole"], doorMain);
+  reparentKeepWorld(byName["spindle"], byName["spindle-hole"]);
+  reparentKeepWorld(byName["knob"], spindle);
+  reparentKeepWorld(byName["glass-sec"], doorSec);
+  reparentKeepWorld(byName["framewindow-1"], doorFrame);
+  reparentKeepWorld(byName["framewindow-2"], doorFrame);
 
-  let angle = 0;
-  let dir = 1;
-  let pause = 0;
-  let spindleAngle = 0;
-
-  const SPEED = 1.8;
-  const MAX = Math.PI / 2;
-  const PAUSE = 0.8;
-  const SPINDLE_MAX = Math.PI / 2;
-  const SPINDLE_LERP = 10;
+  let angle = 0,
+    dir = 1,
+    pause = 0,
+    spindleAngle = 0;
+  const SPEED = 1.8,
+    MAX = Math.PI / 2,
+    PAUSE = 0.8;
+  const SPINDLE_MAX = Math.PI / 2,
+    SPINDLE_LERP = 10;
 
   return {
     root,
@@ -49,9 +46,8 @@ export async function createDoor(gl, program, glbUrl) {
     update(dt) {
       if (!doorMain) return;
 
-      if (pause > 0) {
-        pause -= dt;
-      } else {
+      if (pause > 0) pause -= dt;
+      else {
         angle += dir * SPEED * dt;
         if (angle >= MAX) {
           angle = MAX;
@@ -64,14 +60,12 @@ export async function createDoor(gl, program, glbUrl) {
           pause = PAUSE;
         }
       }
-
       doorMain.rotation[1] = angle;
 
       if (spindle) {
-        const isMoving = pause <= 0;
-        const target = isMoving ? SPINDLE_MAX : 0;
-        const t = Math.min(1, dt * SPINDLE_LERP);
-        spindleAngle += (target - spindleAngle) * t;
+        const target = pause <= 0 ? SPINDLE_MAX : 0;
+        spindleAngle +=
+          (target - spindleAngle) * Math.min(1, dt * SPINDLE_LERP);
         spindle.rotation[1] = -spindleAngle;
       }
     },
