@@ -14,23 +14,10 @@ export async function createChair(gl, program, glbUrl) {
 
   const upper = byName["upper"];
   const bottom = byName["bottom"];
-  const wheels = [];
-  for (let i = 1; i <= 5; i++) {
-    const w =
-      byName[`wheel-${i}`] || byName[`wheel${i}`] || byName[`wheel_${i}`];
-    if (w) wheels.push(w);
-  }
-  if (wheels.length === 0) {
-    gltf.nodes.forEach((n) => {
-      if (n.name && n.name.toLowerCase().includes("wheel")) wheels.push(n);
-    });
-  }
-
-  console.log("Chair nodes:", {
-    upper: upper?.name,
-    bottom: bottom?.name,
-    wheels: wheels.map((w) => w.name),
-  });
+  
+  const wheels = gltf.nodes.filter(
+    (n) => n.name && n.name.toLowerCase().includes("wheel")
+  );
 
   if (bottom) {
     if (upper) reparentKeepWorld(upper, bottom);
@@ -44,7 +31,6 @@ export async function createChair(gl, program, glbUrl) {
   const UPPER_SPEED = 6;
   const UPPER_MAX = Math.PI * 2;
   const UPPER_PAUSE = 0.6;
-  const WHEEL_SPEED = 5.0;
 
   return {
     root,
@@ -61,18 +47,14 @@ export async function createChair(gl, program, glbUrl) {
             upperAngle = UPPER_MAX;
             upperDir = -1;
             upperPause = UPPER_PAUSE;
-          }
-          if (upperAngle <= 0) {
+          } else if (upperAngle <= 0) {
             upperAngle = 0;
             upperDir = 1;
             upperPause = UPPER_PAUSE;
           }
         }
-        upper.rotation[2] = upperAngle;
-      }
-
-      for (const w of wheels) {
-        w.rotation[0] += WHEEL_SPEED * dt;
+        
+        upper.rotation[1] = upperAngle;
       }
     },
   };
