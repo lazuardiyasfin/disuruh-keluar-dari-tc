@@ -13,18 +13,38 @@ export async function createScene(gl, program) {
   const root = new Transform();
   const rollerBlinds = [];
 
-  const teacherTableAsset = await createTeacherTable(gl, program, "./assets/models/teacherTable.glb");
-  const windowsAsset = await createWindows(gl, program, "./assets/models/windows.glb");
-  const teacherChair = await createChair(gl, program, "./assets/models/teacherChair.glb");
+  const teacherTableAsset = await createTeacherTable(
+    gl,
+    program,
+    "./assets/models/teacherTable.glb",
+  );
+  const windowsAsset = await createWindows(
+    gl,
+    program,
+    "./assets/models/windows.glb",
+  );
+  const teacherChair = await createChair(
+    gl,
+    program,
+    "./assets/models/teacherChair.glb",
+  );
   const door = await createDoor(gl, program, "./assets/models/door.glb");
-  const screenProjector = await createScreenProjector(gl, program, "./assets/models/screenProjector.glb");
+  const screenProjector = await createScreenProjector(
+    gl,
+    program,
+    "./assets/models/screenProjector.glb",
+  );
 
   windowsAsset.root.position.set(-5, 1, -1);
   windowsAsset.root.rotation[1] = Math.PI;
   root.addChild(windowsAsset.root);
 
   for (let i = 0; i < 2; i++) {
-    const board = await createGlassBoard(gl, program, "./assets/models/glassBoard.glb");
+    const board = await createGlassBoard(
+      gl,
+      program,
+      "./assets/models/glassBoard.glb",
+    );
     board.root.position.set(i === 0 ? -1.075 : 1.075, 2, -2);
     root.addChild(board.root);
   }
@@ -42,11 +62,19 @@ export async function createScene(gl, program) {
       const x = (c - (cols - 1) / 2) * colSpacing;
       const z = 1 + r * rowSpacing;
 
-      const table = await createStudentTable(gl, program, "./assets/models/studentTable.glb");
+      const table = await createStudentTable(
+        gl,
+        program,
+        "./assets/models/studentTable.glb",
+      );
       table.root.position.set(x, 0, z);
       root.addChild(table.root);
 
-      const chair = await createStudentChair(gl, program, "./assets/models/studentChair.glb");
+      const chair = await createStudentChair(
+        gl,
+        program,
+        "./assets/models/studentChair.glb",
+      );
       chair.root.position.set(x, 0, z + 0.6);
       root.addChild(chair.root);
     }
@@ -64,7 +92,11 @@ export async function createScene(gl, program) {
 
   const blindZPositions = [-1.725, -1, -0.275];
   for (const z of blindZPositions) {
-    const blind = await createRollerBlind( gl, program, "./assets/models/rollerBlind.glb" );
+    const blind = await createRollerBlind(
+      gl,
+      program,
+      "./assets/models/rollerBlind.glb",
+    );
     blind.root.position.set(-4.92, 1.85, z);
     blind.root.rotation[1] = Math.PI / 2;
     root.addChild(blind.root);
