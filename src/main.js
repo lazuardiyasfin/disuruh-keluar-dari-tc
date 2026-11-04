@@ -130,7 +130,7 @@ const program = new Program(renderer.gl, {
 const camera = new Camera(renderer.gl, {
   fov: 60, aspect: innerWidth / innerHeight, near: 0.1, far: 100,
 });
-camera.position.set(0, 1.4, 4);
+camera.position.set(0, 2.6, 6);
 camera.lookAt(new Vec3(0, 0, 0));
 
 function resize() {
