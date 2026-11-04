@@ -32,8 +32,48 @@ export class Renderer {
         scene.updateMatrixWorld();
         if (camera) camera.updateMatrixWorld();
 
+        const opaque = [];
+        const transparent = [];
+
         scene.traverse((node) => {
-            if (node.visible && node.draw) node.draw({ camera });
+            if (!node.visible || !node.draw) return;
+            if (node.program.transparent) {
+                transparent.push(node);
+            } else {
+                opaque.push(node);
+            }
         });
+
+        const camPos = camera.worldPosition;
+        const tempVec = { x:0, y:0, z:0 }; 
+        
+        transparent.sort((a, b) => {
+            a.worldMatrix.getTranslation(tempVec);
+            const distA = (tempVec[0]-camPos[0])**2 + (tempVec[1]-camPos[1])**2 + (tempVec[2]-camPos[2])**2;
+            
+            b.worldMatrix.getTranslation(tempVec);
+            const distB = (tempVec[0]-camPos[0])**2 + (tempVec[1]-camPos[1])**2 + (tempVec[2]-camPos[2])**2;
+            
+            return distB - distA;
+        });
+
+        gl.disable(gl.BLEND);
+        gl.depthMask(true);
+        for (const node of opaque) {
+            node.draw({ camera });
+        }
+
+        if (transparent.length > 0) {
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            gl.depthMask(false);
+
+            for (const node of transparent) {
+                node.draw({ camera });
+            }
+
+            gl.disable(gl.BLEND);
+            gl.depthMask(true);
+        }
     }
 }

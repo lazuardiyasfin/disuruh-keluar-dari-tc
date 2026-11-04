@@ -3,10 +3,19 @@ import { Texture } from './texture.js';
 let ID = 0;
 
 export class Program {
-    constructor(gl, { vertex, fragment, uniforms = {} } = {}) {
+    constructor(gl, { 
+        vertex, 
+        fragment, 
+        uniforms = {},
+        transparent = false,
+        depthWrite = true
+    } = {}) {
         this.gl = gl;
         this.id = ID++;
         this.uniforms = uniforms;
+
+        this.transparent = transparent;
+        this.depthWrite = depthWrite;
 
         const vs = gl.createShader(gl.VERTEX_SHADER);
         gl.shaderSource(vs, vertex);
